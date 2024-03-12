@@ -187,7 +187,7 @@ const UploadForm = () => {
       .catch((reason) => {
         if (reason.response && reason.response.status === 401) {
           toast({
-            title: "Login Request",
+            title: "Logged out",
             description: 'Your session has expired. Please log in again.',
             status: "warning",
             duration: 15000,
