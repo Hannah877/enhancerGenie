@@ -42,6 +42,7 @@ app.secret_key = '12345'
 mail = Mail(app)
 
 app.config['JWT_SECRET_KEY'] = 'THIS_IS_SO_PRIVATE'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes=30)
 jwt = JWTManager(app)
 
 logger = logging.getLogger('waitress')
@@ -463,8 +464,12 @@ def hello():
 
         chartResult = chart.input_selection_exists(fp)
 
-        if verify_jwt_in_request(optional=True):
+        try:
+            verify_jwt_in_request(optional=True)
             user.insert_fp_to_user_history(get_jwt_identity(), fp)
+        except Exception as e:
+            logger.error(str(e))
+            return jsonify({"status": "error", "message": "Session has expired. Please log in again."}), 401
 
         if email != '':
             msg = Message('Your enhancerGenie result', sender='enhancergenie@gmail.com',
