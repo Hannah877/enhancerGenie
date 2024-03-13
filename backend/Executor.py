@@ -592,11 +592,19 @@ def get_history_metadata():
         if doc != None:
             oid_str = str(doc['_id'])
             int_val = int(hashlib.sha1(oid_str.encode()).hexdigest(), 16)
+            algorithms = doc["algorithms"]
+            if isinstance(algorithms, str):
+                try:
+                    algorithms = ast.literal_eval(algorithms)
+                except ValueError as e:
+                    algorithms = []
+                    print(f"Error evaluating algorithms: {e}")
+
             result.append({
                 "id": int_val,
                 "assembly": doc["assembly"],
                 "tissue": doc["tissue"],
-                "algorithms": ast.literal_eval(doc["algorithms"]),
+                "algorithms": algorithms,
                 "fingerprint": doc["fingerprint"]
             })
 
